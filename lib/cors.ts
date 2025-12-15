@@ -3,7 +3,7 @@
  * Handles Cross-Origin Resource Sharing for API routes
  */
 
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export interface CorsOptions {
   origin?: string | string[] | ((origin: string | null) => boolean);
@@ -20,11 +20,15 @@ export interface CorsOptions {
  */
 const defaultOptions: CorsOptions = {
   origin: process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
-    : true, // Allow same-origin by default
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
+    ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+    : ["http://localhost:3000"], // Allow same-origin by default
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: [
+    "X-RateLimit-Limit",
+    "X-RateLimit-Remaining",
+    "X-RateLimit-Reset",
+  ],
   credentials: true,
   maxAge: 86400, // 24 hours
 };
@@ -34,7 +38,11 @@ const defaultOptions: CorsOptions = {
  */
 function isOriginAllowed(
   origin: string | null,
-  allowedOrigins: string | string[] | ((origin: string | null) => boolean) | boolean
+  allowedOrigins:
+    | string
+    | string[]
+    | ((origin: string | null) => boolean)
+    | boolean
 ): boolean {
   if (!origin) {
     // Same-origin requests don't have an Origin header
@@ -45,11 +53,11 @@ function isOriginAllowed(
     return true; // Allow all origins
   }
 
-  if (typeof allowedOrigins === 'function') {
+  if (typeof allowedOrigins === "function") {
     return allowedOrigins(origin);
   }
 
-  if (typeof allowedOrigins === 'string') {
+  if (typeof allowedOrigins === "string") {
     return allowedOrigins === origin;
   }
 
@@ -68,33 +76,33 @@ export function createCorsHeaders(
   options: CorsOptions = {}
 ): Record<string, string> {
   const config = { ...defaultOptions, ...options };
-  const origin = request.headers.get('origin');
+  const origin = request.headers.get("origin");
   const isAllowed = isOriginAllowed(origin, config.origin ?? true);
 
   const headers: Record<string, string> = {};
 
   if (isAllowed && origin) {
-    headers['Access-Control-Allow-Origin'] = origin;
+    headers["Access-Control-Allow-Origin"] = origin;
   }
 
   if (config.credentials) {
-    headers['Access-Control-Allow-Credentials'] = 'true';
+    headers["Access-Control-Allow-Credentials"] = "true";
   }
 
   if (config.methods) {
-    headers['Access-Control-Allow-Methods'] = config.methods.join(', ');
+    headers["Access-Control-Allow-Methods"] = config.methods.join(", ");
   }
 
   if (config.allowedHeaders) {
-    headers['Access-Control-Allow-Headers'] = config.allowedHeaders.join(', ');
+    headers["Access-Control-Allow-Headers"] = config.allowedHeaders.join(", ");
   }
 
   if (config.exposedHeaders) {
-    headers['Access-Control-Expose-Headers'] = config.exposedHeaders.join(', ');
+    headers["Access-Control-Expose-Headers"] = config.exposedHeaders.join(", ");
   }
 
   if (config.maxAge) {
-    headers['Access-Control-Max-Age'] = config.maxAge.toString();
+    headers["Access-Control-Max-Age"] = config.maxAge.toString();
   }
 
   return headers;
@@ -107,7 +115,7 @@ export function handleCorsPreflight(
   request: Request,
   options: CorsOptions = {}
 ): NextResponse | null {
-  if (request.method === 'OPTIONS') {
+  if (request.method === "OPTIONS") {
     const headers = createCorsHeaders(request, options);
     return new NextResponse(null, {
       status: 204,
@@ -132,4 +140,3 @@ export function withCors(
   });
   return response;
 }
-
