@@ -22,10 +22,10 @@ export interface ApiHandlerOptions {
  * Wrapper for API route handlers with common middleware
  */
 export function createApiHandler(
-  handler: (request: NextRequest, context?: any) => Promise<NextResponse>,
+  handler: (request: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse>,
   options: ApiHandlerOptions = {}
 ) {
-  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
+  return async (request: NextRequest, context?: Record<string, unknown>): Promise<NextResponse> => {
     try {
       // Handle CORS preflight
       if (options.cors !== false) {
