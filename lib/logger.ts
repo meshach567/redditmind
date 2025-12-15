@@ -3,9 +3,9 @@
  * Uses Sentry in production, falls back to console in development
  */
 
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
-type LogLevel = 'error' | 'warn' | 'info' | 'debug';
+type LogLevel = "error" | "warn" | "info" | "debug";
 
 interface LogContext {
   [key: string]: unknown;
@@ -18,7 +18,8 @@ class Logger {
     // Check if Sentry is enabled
     this.isSentryEnabled =
       !!process.env.NEXT_PUBLIC_SENTRY_DSN &&
-      (process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_SENTRY_DEBUG === 'true');
+      (process.env.NODE_ENV === "production" ||
+        process.env.NEXT_PUBLIC_SENTRY_DEBUG === "true");
   }
 
   private log(level: LogLevel, message: string, context?: LogContext) {
@@ -27,13 +28,15 @@ class Logger {
 
     // Log to Sentry if enabled
     if (this.isSentryEnabled) {
-      if (level === 'error') {
+      if (level === "error") {
         Sentry.captureMessage(message, {
-          level: 'error',
+          level: "error",
           extra: context,
         });
       } else {
-        const sentryLevel = (level === 'warn' ? 'warning' : level) as Sentry.SeverityLevel;
+        const sentryLevel = (
+          level === "warn" ? "warning" : level
+        ) as Sentry.SeverityLevel;
         Sentry.captureMessage(logMessage, {
           level: sentryLevel,
           extra: context,
@@ -43,17 +46,17 @@ class Logger {
 
     // Always log to console for development and as fallback
     switch (level) {
-      case 'error':
-        console.error(logMessage, context || '');
+      case "error":
+        console.error(logMessage, context || "");
         break;
-      case 'warn':
-        console.warn(logMessage, context || '');
+      case "warn":
+        console.warn(logMessage, context || "");
         break;
-      case 'info':
-        console.info(logMessage, context || '');
+      case "info":
+        console.info(logMessage, context || "");
         break;
       default:
-        console.log(logMessage, context || '');
+        console.log(logMessage, context || "");
     }
   }
 
@@ -72,28 +75,27 @@ class Logger {
     // Capture exceptions in Sentry
     if (this.isSentryEnabled && error instanceof Error) {
       Sentry.captureException(error, {
-        level: 'error',
+        level: "error",
         extra: errorContext,
       });
     }
 
-    this.log('error', message, errorContext);
+    this.log("error", message, errorContext);
   }
 
   warn(message: string, context?: LogContext) {
-    this.log('warn', message, context);
+    this.log("warn", message, context);
   }
 
   info(message: string, context?: LogContext) {
-    this.log('info', message, context);
+    this.log("info", message, context);
   }
 
   debug(message: string, context?: LogContext) {
-    if (process.env.NODE_ENV === 'development') {
-      this.log('debug', message, context);
+    if (process.env.NODE_ENV === "development") {
+      this.log("debug", message, context);
     }
   }
 }
 
 export const logger = new Logger();
-
