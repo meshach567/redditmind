@@ -5,6 +5,7 @@
 
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { NextResponse } from 'next/server';
 
 // Initialize Redis client (works without Redis in development)
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -49,7 +50,7 @@ export const strictLimiter = redis
 export async function checkRateLimit(
   request: Request,
   limiter: Ratelimit | null = standardLimiter
-): Promise<Response | null> {
+): Promise<NextResponse | null> {
   // Skip rate limiting in development if Redis is not configured
   if (!limiter || process.env.NODE_ENV === 'development') {
     return null;
@@ -61,7 +62,7 @@ export async function checkRateLimit(
     const { success, limit, remaining, reset } = await limiter.limit(identifier);
 
     if (!success) {
-      return new Response(
+      return new NextResponse(
         JSON.stringify({
           error: 'Rate limit exceeded',
           message: 'Too many requests. Please try again later.',
@@ -101,4 +102,3 @@ function getIdentifier(request: Request): string {
 
   return ip;
 }
-
