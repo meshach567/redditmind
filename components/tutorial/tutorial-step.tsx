@@ -8,7 +8,7 @@ export function TutorialStep({
   children: React.ReactNode;
 }) {
   return (
-    <li className="relative">
+    <div className="relative">
       <Checkbox
         id={title}
         name={title}
@@ -25,6 +25,6 @@ export function TutorialStep({
           {children}
         </div>
       </label>
-    </li>
+    </div>
   );
 }
