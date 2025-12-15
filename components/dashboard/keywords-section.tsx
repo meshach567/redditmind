@@ -107,24 +107,32 @@ export default function KeywordsSection() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Keywords & Search Intent</h2>
+    <section className="space-y-4 rounded-2xl border border-slate-800/70 bg-slate-950/60 p-5 md:p-6 shadow-sm shadow-black/20">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-50">Keywords & search intent</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            Capture high-intent queries you want to own so Redditmind can turn them into topics.
+          </p>
+        </div>
         <Button
           onClick={() => setShowForm(!showForm)}
           className="gap-2"
+          size="sm"
         >
           <Plus className="h-4 w-4" />
-          Add Keyword
+          {showForm ? 'Hide form' : 'Add keyword'}
         </Button>
       </div>
 
       {/* Form */}
       {showForm && (
-        <Card className="p-6">
+        <Card className="border-slate-800 bg-slate-900/70 p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="keyword">Keyword</Label>
+              <Label htmlFor="keyword" className="text-slate-100">
+                Keyword
+              </Label>
               <Input
                 id="keyword"
                 placeholder="e.g., best presentation software"
@@ -137,7 +145,9 @@ export default function KeywordsSection() {
             </div>
 
             <div>
-              <Label htmlFor="search_intent">Search Intent (optional)</Label>
+              <Label htmlFor="search_intent" className="text-slate-100">
+                Search intent (optional)
+              </Label>
               <Input
                 id="search_intent"
                 placeholder="e.g., looking for presentation tools"
@@ -149,7 +159,9 @@ export default function KeywordsSection() {
             </div>
 
             <div>
-              <Label htmlFor="intent_category">Intent Category</Label>
+              <Label htmlFor="intent_category" className="text-slate-100">
+                Intent category
+              </Label>
               <select
                 id="intent_category"
                 value={formData.intent_category}
@@ -159,7 +171,7 @@ export default function KeywordsSection() {
                     intent_category: e.target.value,
                   })
                 }
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+                className="block w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none"
                 title="Select an intent category"
               >
                 {INTENT_CATEGORIES.map((cat) => (
@@ -168,7 +180,7 @@ export default function KeywordsSection() {
                   </option>
                 ))}
               </select>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-slate-400">
                 • <strong>Comparison</strong>: X vs Y, alternatives
                 <br />• <strong>Recommendation</strong>: best tool for...
                 <br />• <strong>How-to</strong>: tutorials, workflows
@@ -196,18 +208,22 @@ export default function KeywordsSection() {
       {/* Keywords List */}
       <div className="grid gap-3">
         {loading ? (
-          <Card className="p-6 text-center text-gray-500">Loading...</Card>
+          <Card className="border-slate-800 bg-slate-900/70 p-6 text-center text-slate-400">
+            Loading keywords...
+          </Card>
         ) : keywords.length === 0 ? (
-          <Card className="p-6 text-center text-gray-500">
+          <Card className="border-dashed border-slate-800 bg-slate-900/40 p-6 text-center text-slate-400">
             No keywords yet. Add some to start generating content!
           </Card>
         ) : (
           keywords.map((kw) => (
-            <Card key={kw.id} className="p-4">
+            <Card key={kw.id} className="border-slate-800 bg-slate-900/70 p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">{kw.keyword}</h3>
+                    <h3 className="text-sm font-semibold text-slate-50 md:text-base">
+                      {kw.keyword}
+                    </h3>
                     <span
                       className={`rounded-full px-2 py-1 text-xs font-medium ${getCategoryColor(
                         kw.intent_category
@@ -217,11 +233,11 @@ export default function KeywordsSection() {
                     </span>
                   </div>
                   {kw.search_intent && (
-                    <p className="mt-1 text-sm text-gray-600">
+                    <p className="mt-1 text-sm text-slate-300">
                       Intent: {kw.search_intent}
                     </p>
                   )}
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-slate-400">
                     Added: {new Date(kw.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -238,6 +254,6 @@ export default function KeywordsSection() {
           ))
         )}
       </div>
-    </div>
+    </section>
   );
 }
