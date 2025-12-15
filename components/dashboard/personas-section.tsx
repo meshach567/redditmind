@@ -93,24 +93,32 @@ export default function PersonasSection() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Reddit Personas</h2>
+    <section className="space-y-4 rounded-2xl border border-slate-800/70 bg-slate-950/60 p-5 md:p-6 shadow-sm shadow-black/20">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-50">Reddit personas</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            Model the accounts you control so the planner can assign posts and comments realistically.
+          </p>
+        </div>
         <Button
           onClick={() => setShowForm(!showForm)}
           className="gap-2"
+          size="sm"
         >
           <Plus className="h-4 w-4" />
-          Add Persona
+          {showForm ? 'Hide form' : 'Add persona'}
         </Button>
       </div>
 
       {/* Form */}
       {showForm && (
-        <Card className="p-6">
+        <Card className="border-slate-800 bg-slate-900/70 p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-slate-100">
+                Username
+              </Label>
               <Input
                 id="username"
                 placeholder="reddit_username"
@@ -123,7 +131,9 @@ export default function PersonasSection() {
             </div>
 
             <div>
-              <Label htmlFor="bio">Bio (optional)</Label>
+              <Label htmlFor="bio" className="text-slate-100">
+                Bio (optional)
+              </Label>
               <Input
                 id="bio"
                 placeholder="Brief background"
@@ -135,7 +145,9 @@ export default function PersonasSection() {
             </div>
 
             <div>
-              <Label htmlFor="subreddits">Subreddits (comma-separated)</Label>
+              <Label htmlFor="subreddits" className="text-slate-100">
+                Subreddits (comma-separated)
+              </Label>
               <Input
                 id="subreddits"
                 placeholder="r/technology, r/programming, r/startup"
@@ -163,35 +175,39 @@ export default function PersonasSection() {
       )}
 
       {/* Personas List */}
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         {loading ? (
-          <Card className="p-6 text-center text-gray-500">Loading...</Card>
+          <Card className="border-slate-800 bg-slate-900/70 p-6 text-center text-slate-400">
+            Loading personas...
+          </Card>
         ) : personas.length === 0 ? (
-          <Card className="p-6 text-center text-gray-500">
+          <Card className="border-dashed border-slate-800 bg-slate-900/40 p-6 text-center text-slate-400">
             No personas yet. Create one to get started!
           </Card>
         ) : (
           personas.map((persona) => (
-            <Card key={persona.id} className="p-4">
+            <Card key={persona.id} className="border-slate-800 bg-slate-900/70 p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{persona.username}</h3>
+                  <h3 className="text-sm font-semibold text-slate-50 md:text-base">
+                    {persona.username}
+                  </h3>
                   {persona.bio && (
-                    <p className="text-sm text-gray-600">{persona.bio}</p>
+                    <p className="mt-1 text-sm text-slate-300">{persona.bio}</p>
                   )}
                   {persona.subreddits && persona.subreddits.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-1">
+                    <div className="mt-2 flex flex-wrap gap-1.5">
                       {persona.subreddits.map((sub, i) => (
                         <span
                           key={i}
-                          className="inline-block rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-700"
+                          className="inline-block rounded-full bg-sky-900/60 px-2 py-0.5 text-xs text-sky-200 ring-1 ring-sky-600/40"
                         >
                           {sub}
                         </span>
                       ))}
                     </div>
                   )}
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-slate-400">
                     Created: {new Date(persona.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -208,6 +224,6 @@ export default function PersonasSection() {
           ))
         )}
       </div>
-    </div>
+    </section>
   );
 }
