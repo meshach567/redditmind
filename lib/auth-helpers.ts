@@ -3,10 +3,10 @@
  * Provides common auth functions for API routes
  */
 
-import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse } from 'next/server';
-import { logger } from './logger';
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse } from "next/server";
+import { logger } from "./logger";
 
 /**
  * Get authenticated user from request
@@ -47,7 +47,7 @@ export async function getAuthenticatedUser() {
 
     return { user, supabase };
   } catch (error) {
-    logger.error('Error getting authenticated user', error as Error);
+    logger.error("Error getting authenticated user", error as Error);
     return null;
   }
 }
@@ -57,16 +57,12 @@ export async function getAuthenticatedUser() {
  */
 export async function requireAuth() {
   const auth = await getAuthenticatedUser();
-  
+
   if (!auth) {
     return {
-      error: NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      ),
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
   }
 
   return auth;
 }
-
