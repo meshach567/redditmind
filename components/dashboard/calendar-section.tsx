@@ -96,19 +96,21 @@ export default function CalendarSection() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Content Calendar</h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Generate weekly Reddit content calendars
+    <section className="space-y-6 rounded-2xl border border-slate-800/70 bg-slate-950/60 p-5 md:p-6 shadow-sm shadow-black/20">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-xl font-semibold text-slate-50">Content calendar</h2>
+        <p className="text-sm text-slate-400">
+          Generate a weekly Reddit plan with posts, personas, and comment threads.
         </p>
       </div>
 
       {/* Generate Button */}
-      <Card className="p-6">
+      <Card className="border-slate-800 bg-slate-900/70 p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">Posts per week</label>
+            <label className="block text-sm font-medium text-slate-100">
+              Posts per week
+            </label>
             <input
               type="number"
               min="1"
@@ -122,7 +124,7 @@ export default function CalendarSection() {
                 // If invalid or empty, don't update state (keeps previous valid value)
               }}
               placeholder="Enter posts per week"
-              className="mt-1 block w-full max-w-xs rounded-md border border-gray-300 px-3 py-2"
+              className="mt-1 block w-full max-w-xs rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none"
             />
           </div>
 
@@ -151,11 +153,13 @@ export default function CalendarSection() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* List */}
         <div className="space-y-3">
-          <h3 className="font-semibold">Generated Calendars</h3>
+          <h3 className="text-sm font-semibold text-slate-100">Generated calendars</h3>
           {loading ? (
-            <Card className="p-6 text-center text-gray-500">Loading...</Card>
+            <Card className="border-slate-800 bg-slate-900/70 p-6 text-center text-slate-400">
+              Loading calendars...
+            </Card>
           ) : calendars.length === 0 ? (
-            <Card className="p-6 text-center text-gray-500">
+            <Card className="border-dashed border-slate-800 bg-slate-900/40 p-6 text-center text-slate-400">
               No calendars yet. Generate one to get started!
             </Card>
           ) : (
@@ -163,20 +167,20 @@ export default function CalendarSection() {
               {calendars.map((cal) => (
                 <Card
                   key={cal.id}
-                  className={`cursor-pointer p-4 transition ${
+                  className={`cursor-pointer border-slate-800 p-4 transition ${
                     selectedCalendar === cal.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'hover:bg-gray-50'
+                      ? 'border-sky-500 bg-sky-950/60'
+                      : 'bg-slate-900/70 hover:bg-slate-900'
                   }`}
                   onClick={() => setSelectedCalendar(cal.id)}
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-medium">
+                      <p className="text-sm font-medium text-slate-50">
                         Week of{' '}
                         {new Date(cal.week_start).toLocaleDateString()}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs text-slate-400">
                         {cal.posts?.length || 0} posts
                       </p>
                     </div>
@@ -196,17 +200,17 @@ export default function CalendarSection() {
 
         {/* Preview */}
         <div className="space-y-3">
-          <h3 className="font-semibold">
-            {selectedData ? 'Calendar Preview' : 'Select a Calendar'}
+          <h3 className="text-sm font-semibold text-slate-100">
+            {selectedData ? 'Calendar preview' : 'Select a calendar'}
           </h3>
           {selectedData ? (
             <div className="space-y-4">
-              <Card className="p-4">
-                <p className="text-sm text-gray-600">
+              <Card className="border-slate-800 bg-slate-900/70 p-4">
+                <p className="text-sm text-slate-300">
                   <strong>Week:</strong>{' '}
                   {new Date(selectedData.week_start).toLocaleDateString()}
                 </p>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-slate-300">
                   <strong>Quality Score:</strong>{' '}
                   <span
                     className={getQualityColor(selectedData.quality_score)}
@@ -218,18 +222,22 @@ export default function CalendarSection() {
 
               {/* Posts */}
               <div>
-                <h4 className="font-medium">Posts ({selectedData.posts?.length || 0})</h4>
+                <h4 className="text-sm font-medium text-slate-100">
+                  Posts ({selectedData.posts?.length || 0})
+                </h4>
                 <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
                   {selectedData.posts?.map((post) => (
-                    <Card key={post.id} className="p-3">
-                      <p className="text-xs font-semibold text-blue-600">
+                    <Card key={post.id} className="border-slate-800 bg-slate-900/70 p-3">
+                      <p className="text-xs font-semibold text-sky-300">
                         {post.subreddit}
                       </p>
-                      <p className="mt-1 font-medium text-sm">{post.title}</p>
-                      <p className="mt-1 text-xs text-gray-600 line-clamp-2">
+                      <p className="mt-1 text-sm font-medium text-slate-50">
+                        {post.title}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-300 line-clamp-2">
                         {post.body}
                       </p>
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-slate-500">
                         {new Date(post.scheduled_time).toLocaleString()}
                       </p>
                     </Card>
@@ -239,16 +247,19 @@ export default function CalendarSection() {
 
               {/* Comments */}
               <div>
-                <h4 className="font-medium">
+                <h4 className="text-sm font-medium text-slate-100">
                   Comments ({selectedData.comments?.length || 0})
                 </h4>
                 <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
                   {selectedData.comments?.map((comment) => (
-                    <Card key={comment.id} className="p-2 bg-gray-50">
-                      <p className="text-xs text-gray-700 line-clamp-2">
+                    <Card
+                      key={comment.id}
+                      className="border-slate-800 bg-slate-900/70 p-2"
+                    >
+                      <p className="text-xs text-slate-200 line-clamp-2">
                         {comment.text}
                       </p>
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-slate-500">
                         {new Date(comment.scheduled_time).toLocaleString()}
                       </p>
                     </Card>
@@ -257,12 +268,12 @@ export default function CalendarSection() {
               </div>
             </div>
           ) : (
-            <Card className="p-6 text-center text-gray-500">
+            <Card className="border-dashed border-slate-800 bg-slate-900/40 p-6 text-center text-slate-400">
               Select a calendar to preview
             </Card>
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
