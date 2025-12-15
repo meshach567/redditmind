@@ -33,8 +33,9 @@ class Logger {
           extra: context,
         });
       } else {
+        const sentryLevel = (level === 'warn' ? 'warning' : level) as Sentry.SeverityLevel;
         Sentry.captureMessage(logMessage, {
-          level,
+          level: sentryLevel,
           extra: context,
         });
       }
