@@ -14,8 +14,9 @@ async function handlePost(request: NextRequest) {
   const body = await validateRequestBody(request, generateCalendarSchema);
   const { weekStart, postsPerWeek } = body;
 
-  // Fetch user's data
-  const [{ data: personas }, { data: keywords }] = await Promise.all([
+  try {
+    // Fetch user's data
+    const [{ data: personas }, { data: keywords }] = await Promise.all([
       supabase
         .from('personas')
         .select('*')
@@ -26,22 +27,22 @@ async function handlePost(request: NextRequest) {
         .eq('user_id', user.id),
     ]);
 
-  if (!personas || personas.length < 1) {
-    return NextResponse.json(
-      { error: 'Need at least 1 persona configured' },
-      { status: 400 }
-    );
-  }
+    if (!personas || personas.length < 1) {
+      return NextResponse.json(
+        { error: 'Need at least 1 persona configured' },
+        { status: 400 }
+      );
+    }
 
-  if (!keywords || keywords.length === 0) {
-    return NextResponse.json(
-      { error: 'Need at least one keyword configured' },
-      { status: 400 }
-    );
-  }
+    if (!keywords || keywords.length === 0) {
+      return NextResponse.json(
+        { error: 'Need at least one keyword configured' },
+        { status: 400 }
+      );
+    }
 
-  // Generate content calendar
-  interface PostToGenerate {
+    // Generate content calendar
+    interface PostToGenerate {
       subreddit: string;
       persona_id: string;
       title: string;
@@ -58,23 +59,23 @@ async function handlePost(request: NextRequest) {
 
     const postsToGenerate: PostToGenerate[] = [];
     const commentsToGenerate: CommentToGenerate[] = [];
-    
+
     // Take first N keywords and create posts
     const selectedKeywords = keywords.slice(0, postsPerWeek);
-    
+
     selectedKeywords.forEach((keyword, index) => {
       // Select a persona for this post
       const personaIndex = index % personas.length;
       const persona = personas[personaIndex];
-      
+
       // Schedule post on different days
       const postDate = new Date(weekStart);
       postDate.setDate(postDate.getDate() + (index % 5)); // Spread across the week
       postDate.setHours(9 + Math.floor(Math.random() * 5), Math.floor(Math.random() * 60), 0);
-      
+
       const postTitle = generatePostTitle(keyword.keyword, keyword.intent_category);
       const postBody = generatePostBody(keyword.keyword, keyword.intent_category);
-      
+
       postsToGenerate.push({
         subreddit: 'r/technology', // Default subreddit
         persona_id: persona.id,
@@ -83,14 +84,16 @@ async function handlePost(request: NextRequest) {
         scheduled_time: postDate.toISOString(),
         keyword_id: keyword.id,
       });
-      
+
       // Generate 2-3 comments for each post
       const numComments = 2 + Math.floor(Math.random() * 2);
       for (let i = 0; i < numComments; i++) {
         const commenterIndex = (personaIndex + i + 1) % personas.length;
         const commentTime = new Date(postDate);
-        commentTime.setMinutes(commentTime.getMinutes() + 5 + (i * 15) + Math.floor(Math.random() * 10));
-        
+        commentTime.setMinutes(
+          commentTime.getMinutes() + 5 + i * 15 + Math.floor(Math.random() * 10)
+        );
+
         commentsToGenerate.push({
           persona_id: personas[commenterIndex].id,
           text: generateComment(keyword.keyword),
@@ -115,11 +118,11 @@ async function handlePost(request: NextRequest) {
     }
 
     // Save posts with calendar_id
-    const postsWithCalendar = postsToGenerate.map(p => ({
+    const postsWithCalendar = postsToGenerate.map((p) => ({
       ...p,
       calendar_id: calendar.id,
     }));
-    
+
     const { data: savedPosts, error: postsError } = await supabase
       .from('posts')
       .insert(postsWithCalendar)
@@ -133,9 +136,7 @@ async function handlePost(request: NextRequest) {
       post_id: savedPosts?.[idx % (savedPosts?.length || 1)]?.id,
     }));
 
-    const { error: commentsError } = await supabase
-      .from('comments')
-      .insert(commentsWithPostId);
+    const { error: commentsError } = await supabase.from('comments').insert(commentsWithPostId);
 
     if (commentsError) throw commentsError;
 
