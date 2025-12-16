@@ -20,12 +20,23 @@ export interface ApiHandlerOptions {
 
 /**
  * Wrapper for API route handlers with common middleware
+ *
+ * ✅ Updated to support async route params (Next.js App Router)
  */
-export function createApiHandler(
-  handler: (request: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse>,
+export function createApiHandler<
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  TContext extends { params?: Promise<Record<string, string>> } = {}
+>(
+  handler: (
+    request: NextRequest,
+    context: TContext
+  ) => Promise<NextResponse>,
   options: ApiHandlerOptions = {}
 ) {
-  return async (request: NextRequest, context?: Record<string, unknown>): Promise<NextResponse> => {
+  return async (
+    request: NextRequest,
+    context: TContext
+  ): Promise<NextResponse> => {
     try {
       // Handle CORS preflight
       if (options.cors !== false) {
@@ -35,7 +46,11 @@ export function createApiHandler(
 
       // Apply rate limiting
       if (options.rateLimit !== 'none') {
-        const limiter = options.rateLimit === 'strict' ? strictLimiter : standardLimiter;
+        const limiter =
+          options.rateLimit === 'strict'
+            ? strictLimiter
+            : standardLimiter;
+
         const rateLimitResponse = await checkRateLimit(request, limiter);
         if (rateLimitResponse) {
           return withCors(rateLimitResponse, request);
@@ -73,13 +88,15 @@ export function createApiHandler(
       return NextResponse.json(
         {
           error: 'Internal server error',
-          message: process.env.NODE_ENV === 'development' 
-            ? error instanceof Error ? error.message : String(error)
-            : 'An unexpected error occurred',
+          message:
+            process.env.NODE_ENV === 'development'
+              ? error instanceof Error
+                ? error.message
+                : String(error)
+              : 'An unexpected error occurred',
         },
         { status: 500 }
       );
     }
   };
 }
-
