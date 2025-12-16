@@ -6,17 +6,19 @@ import { logger } from '@/lib/logger';
 
 async function handleDelete(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await requireAuth();
   if ('error' in auth) return auth.error;
 
   const { user, supabase } = auth;
 
-  // Validate UUID parameter
-  const { id } = validateParams(params, uuidSchema);
+  // ✅ Await params (REQUIRED in new Next.js)
+  const resolvedParams = await params;
 
-  // Verify keyword belongs to user
+  // Validate UUID parameter
+  const { id } = validateParams(resolvedParams, uuidSchema);
+
   const { data: keyword } = await supabase
     .from('keywords')
     .select('user_id')
